@@ -245,7 +245,14 @@ export default function App() {
   const renderResult = () => {
     if (!solution) return null;
     const { analysis, logic, codes, testCases, interviewAdvice, dryRun, topPerformanceStrategy } = solution;
-    const currentCode = codes.find(c => c.language === selectedLanguage) || codes[0];
+    const currentCode = (codes || []).find(c => {
+      const l = String(c.language || '').toLowerCase();
+      const t = selectedLanguage.toLowerCase();
+      if (t === 'python') return l.includes('python') || l === 'py';
+      if (t === 'cpp') return l.includes('c++') || l.includes('cpp');
+      if (t === 'java') return l === 'java';
+      return l === t;
+    }) || (codes && codes[0]) || { code: '// Solution loading failed. Please try again.', timeComplexity: 'N/A', spaceComplexity: 'N/A' };
 
     return (
       <div className="space-y-6 pb-20">
